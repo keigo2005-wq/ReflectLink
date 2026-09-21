@@ -303,7 +303,7 @@ a:hover {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin: 24px 0;
+    margin: 24px 0 12px;
 }
 
 @media (max-width: 480px) {
@@ -312,7 +312,8 @@ a:hover {
     }
 }
 
-.list-actions a {
+.list-actions a,
+.list-actions-secondary a {
     padding: 14px 16px;
     text-align: center;
     text-decoration: none;
@@ -324,9 +325,32 @@ a:hover {
     border-radius: var(--radius-control);
 }
 
-.list-actions a:hover {
+.list-actions a:hover,
+.list-actions-secondary a:hover {
     opacity: 0.75;
     text-decoration: none;
+}
+
+.list-actions-secondary {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 0 24px;
+}
+
+.list-actions-secondary a {
+    /* .list-actionsの3列グリッド(gap 10px)の1列分と同じ幅にする */
+    flex: 0 0 calc((100% - 20px) / 3);
+}
+
+@media (max-width: 480px) {
+    .list-actions-secondary {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .list-actions-secondary a {
+        flex-basis: auto;
+    }
 }
 
 .list-actions a.list-actions-primary {
@@ -650,6 +674,46 @@ code {
 .goal-period-inputs input {
     width: auto;
     flex: 1;
+}
+
+.goal-period-display {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-label-secondary);
+}
+
+.goal-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.goal-edit-actions .button-secondary-link {
+    margin: 0;
+}
+
+.goal-status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.goal-status-badge.goal-status-todo {
+    color: var(--color-red);
+    background-color: var(--color-red-tint);
+}
+
+.goal-status-badge.goal-status-doing {
+    color: #ff9500;
+    background-color: rgba(255, 149, 0, 0.12);
+}
+
+.goal-status-badge.goal-status-done {
+    color: var(--color-green);
+    background-color: var(--color-green-tint);
 }
 
 /* AI分析結果のMarkdown表示 */

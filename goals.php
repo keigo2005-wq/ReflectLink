@@ -55,6 +55,8 @@ try {
     $error = $error !== "" ? $error : $e->getMessage();
 }
 
+$editId = (int)($_GET["edit"] ?? 0);
+
 // 次に迎える日曜日を新規フォームの開始日の初期値にする(今日が日曜ならその日)
 $today = new DateTime("today");
 $daysUntilSunday = (7 - (int)$today->format("w")) % 7;
@@ -123,46 +125,77 @@ function statusClass(string $status): string
         <p>まだ目標が登録されていません。</p>
     <?php else: ?>
         <?php foreach ($goals as $g): ?>
-            <section class="post-card goal-card">
-                <form action="goals.php" method="post">
-                    <input type="hidden" name="update_id" value="<?= (int)$g["id"] ?>">
+            <?php $isEditing = $editId === (int)$g["id"]; ?>
+            <section class="post-card goal-card" id="goal-<?= (int)$g["id"] ?>">
+                <?php if ($isEditing): ?>
+                    <form action="goals.php" method="post">
+                        <input type="hidden" name="update_id" value="<?= (int)$g["id"] ?>">
 
-                    <div class="form-group goal-period-group">
-                        <label>対象期間</label>
-                        <div class="goal-period-inputs">
-                            <input type="date" name="period_start" value="<?= escape($g["periodStart"]) ?>">
-                            <span>〜</span>
-                            <input type="date" name="period_end" value="<?= escape($g["periodEnd"]) ?>">
+                        <div class="form-group goal-period-group">
+                            <label>対象期間</label>
+                            <div class="goal-period-inputs">
+                                <input type="date" name="period_start" value="<?= escape($g["periodStart"]) ?>">
+                                <span>〜</span>
+                                <input type="date" name="period_end" value="<?= escape($g["periodEnd"]) ?>">
+                            </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>具体的な目標</label>
+                            <textarea name="goal" rows="2" maxlength="500"><?= escape($g["goal"]) ?></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>取り組む行動</label>
+                            <textarea name="action" rows="2" maxlength="500"><?= escape($g["action"]) ?></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>取り組んだ結果（自己評価）</label>
+                            <textarea name="result" rows="2" maxlength="500" placeholder="振り返って感じたことを書く"><?= escape($g["result"] ?? "") ?></textarea>
+                        </div>
+
+                        <div class="goal-card-footer">
+                            <select name="status" class="goal-status-select <?= statusClass($g["status"]) ?>">
+                                <?php foreach ($statuses as $statusOption): ?>
+                                    <option value="<?= escape($statusOption) ?>" <?= $g["status"] === $statusOption ? "selected" : "" ?>>
+                                        <?= escape($statusOption) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+
+                            <div class="goal-edit-actions">
+                                <a href="goals.php#goal-<?= (int)$g["id"] ?>" class="button-secondary-link">キャンセル</a>
+                                <button type="submit" class="button-primary">更新する</button>
+                            </div>
+                        </div>
+                    </form>
+                <?php else: ?>
+                    <p class="goal-period-display">対象期間：<?= escape($g["periodStart"]) ?> 〜 <?= escape($g["periodEnd"]) ?></p>
+
+                    <div class="detail-field">
+                        <h3>具体的な目標</h3>
+                        <p><?= displayText($g["goal"]) ?></p>
                     </div>
 
-                    <div class="form-group">
-                        <label>具体的な目標</label>
-                        <textarea name="goal" rows="2" maxlength="500"><?= escape($g["goal"]) ?></textarea>
+                    <div class="detail-field">
+                        <h3>取り組む行動</h3>
+                        <p><?= displayText($g["action"]) ?></p>
                     </div>
 
-                    <div class="form-group">
-                        <label>取り組む行動</label>
-                        <textarea name="action" rows="2" maxlength="500"><?= escape($g["action"]) ?></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>取り組んだ結果（自己評価）</label>
-                        <textarea name="result" rows="2" maxlength="500" placeholder="振り返って感じたことを書く"><?= escape($g["result"] ?? "") ?></textarea>
+                    <div class="detail-field">
+                        <h3>取り組んだ結果（自己評価）</h3>
+                        <p><?= !empty($g["result"]) ? displayText($g["result"]) : "(未記入)" ?></p>
                     </div>
 
                     <div class="goal-card-footer">
-                        <select name="status" class="goal-status-select <?= statusClass($g["status"]) ?>">
-                            <?php foreach ($statuses as $statusOption): ?>
-                                <option value="<?= escape($statusOption) ?>" <?= $g["status"] === $statusOption ? "selected" : "" ?>>
-                                    <?= escape($statusOption) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <span class="goal-status-badge <?= statusClass($g["status"]) ?>"><?= escape($g["status"]) ?></span>
 
-                        <button type="submit" class="button-primary">更新する</button>
+                        <div class="goal-edit-actions">
+                            <a href="goals.php?edit=<?= (int)$g["id"] ?>#goal-<?= (int)$g["id"] ?>" class="button-secondary-link">編集する</a>
+                        </div>
                     </div>
-                </form>
+                <?php endif; ?>
 
                 <form action="goals.php" method="post" class="goal-delete-form" onsubmit="return confirm('この目標を削除してもよいですか？');">
                     <input type="hidden" name="delete_id" value="<?= (int)$g["id"] ?>">

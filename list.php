@@ -213,6 +213,8 @@ function statusClass(string $status): string
             <a href="post.php" class="list-actions-primary">新規投稿</a>
             <a href="goals.php">目標管理</a>
             <a href="analysis.php">傾向分析</a>
+        </div>
+        <div class="list-actions-secondary">
             <a href="statistics.php">統計</a>
             <a href="export_csv.php">データダウンロード</a>
         </div>
