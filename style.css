@@ -300,16 +300,14 @@ a:hover {
 }
 
 .list-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
     gap: 10px;
     margin: 24px 0;
 }
 
 .list-actions a {
-    flex: 1 1 auto;
-    min-width: 160px;
-    padding: 12px 16px;
+    padding: 14px 16px;
     text-align: center;
     text-decoration: none;
     font-weight: 600;
@@ -325,7 +323,7 @@ a:hover {
     text-decoration: none;
 }
 
-.list-actions a:first-child {
+.list-actions a.list-actions-primary {
     color: white;
     background-color: var(--color-blue);
     box-shadow: none;
@@ -333,11 +331,7 @@ a:hover {
 
 @media (max-width: 700px) {
     .list-actions {
-        flex-direction: column;
-    }
-
-    .list-actions a {
-        width: 100%;
+        grid-template-columns: 1fr;
     }
 }
 
@@ -390,4 +384,246 @@ a:hover {
 code {
     font-family: "SF Mono", Menlo, Consolas, monospace;
     font-size: 13px;
+}
+
+.page-lead {
+    color: var(--color-label-secondary);
+    font-size: 14px;
+    margin: -12px 0 20px;
+}
+
+.search-result-count {
+    font-size: 14px;
+    color: var(--color-label-secondary);
+    margin: 0 0 12px;
+}
+
+/* 汎用ボタン */
+.button-primary {
+    display: inline-block;
+    background-color: var(--color-blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-control);
+    padding: 13px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: opacity 0.15s;
+}
+
+.button-primary:hover {
+    opacity: 0.85;
+    text-decoration: none;
+}
+
+.button-large {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 18px;
+}
+
+.button-secondary-link {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 6px 8px 6px 0;
+    border-radius: var(--radius-control);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    color: var(--color-label);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.button-secondary-link:hover {
+    opacity: 0.75;
+    text-decoration: none;
+}
+
+.analyze-form {
+    margin-bottom: 24px;
+}
+
+/* 局面・改善状況の色分け */
+.text-attack {
+    color: var(--color-red);
+}
+
+.text-defense {
+    color: var(--color-blue);
+}
+
+.text-transition {
+    color: var(--color-label-secondary);
+}
+
+.text-status-todo {
+    color: var(--color-red);
+}
+
+.text-status-doing {
+    color: #ff9500;
+}
+
+.text-status-done {
+    color: var(--color-green);
+}
+
+.post-match-name {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* 投稿詳細画面 */
+.detail-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.detail-match-name {
+    font-size: 24px;
+    margin: 0;
+}
+
+.detail-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tag.phase-attack {
+    background-color: var(--color-red-tint);
+    color: var(--color-red);
+}
+
+.tag.phase-defense {
+    background-color: var(--color-blue-tint);
+    color: var(--color-blue);
+}
+
+.tag.phase-transition {
+    background-color: var(--color-separator);
+    color: var(--color-label-secondary);
+}
+
+.tag.tag-neutral {
+    background-color: var(--color-separator);
+    color: var(--color-label);
+}
+
+.detail-field {
+    padding: 14px 0;
+    border-top: 1px solid var(--color-separator);
+}
+
+.detail-field:first-of-type {
+    border-top: none;
+}
+
+.detail-field h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-label-secondary);
+}
+
+.detail-field p {
+    margin: 0;
+    line-height: 1.7;
+}
+
+.detail-meta {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-separator);
+    font-size: 13px;
+    color: var(--color-label-secondary);
+}
+
+.comment-form-card,
+.comment-list-card {
+    margin-top: 20px;
+}
+
+/* コメント集計画面 */
+.stat-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-tile {
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-tile-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-blue);
+}
+
+.stat-tile-label {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--color-label-secondary);
+}
+
+/* 目標管理画面 */
+.goal-new-form {
+    margin-bottom: 24px;
+}
+
+.goal-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.goal-status-select {
+    width: auto;
+    font-weight: 600;
+    padding: 10px 14px;
+}
+
+.goal-status-select.goal-status-todo {
+    color: var(--color-red);
+}
+
+.goal-status-select.goal-status-doing {
+    color: #ff9500;
+}
+
+.goal-status-select.goal-status-done {
+    color: var(--color-green);
+}
+
+.goal-delete-form {
+    margin-top: 10px;
 }

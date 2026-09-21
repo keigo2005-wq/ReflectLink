@@ -1,0 +1,68 @@
+<?php
+
+const GOAL_SERVICE_URL = "http://127.0.0.1:8080";
+
+function goalApiRequest(string $method, string $path, ?array $body = null): array
+{
+    $ch = curl_init(GOAL_SERVICE_URL . $path);
+
+    $options = [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+    ];
+
+    if ($body !== null) {
+        $options[CURLOPT_POSTFIELDS] = json_encode($body, JSON_UNESCAPED_UNICODE);
+    }
+
+    curl_setopt_array($ch, $options);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        throw new RuntimeException("目標管理サービスに接続できませんでした。サービスが起動しているか確認してください。(" . $curlError . ")");
+    }
+
+    $data = $response === "" ? [] : json_decode($response, true);
+
+    if ($httpCode >= 400) {
+        $message = $data["error"] ?? "目標管理サービスでエラーが発生しました。";
+        throw new RuntimeException($message);
+    }
+
+    return $data;
+}
+
+function listGoals(int $userId): array
+{
+    return goalApiRequest("GET", "/api/goals?userId=" . $userId);
+}
+
+function createGoal(int $userId, string $goal, string $action): array
+{
+    return goalApiRequest("POST", "/api/goals", [
+        "userId" => $userId,
+        "goal" => $goal,
+        "action" => $action,
+    ]);
+}
+
+function updateGoal(int $id, string $goal, string $action, string $result, string $status): array
+{
+    return goalApiRequest("PUT", "/api/goals/" . $id, [
+        "goal" => $goal,
+        "action" => $action,
+        "result" => $result,
+        "status" => $status,
+    ]);
+}
+
+function deleteGoal(int $id): void
+{
+    goalApiRequest("DELETE", "/api/goals/" . $id);
+}

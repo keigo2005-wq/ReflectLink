@@ -1,8 +1,8 @@
 <?php
 
-require_once "db.php";
-require_once "functions.php";
-require_once "auth.php";
+require_once "includes/db.php";
+require_once "includes/functions.php";
+require_once "includes/auth.php";
 
 $currentUser = requireLogin($pdo);
 
@@ -39,9 +39,10 @@ if ($id <= 0) {
     exit("投稿番号が正しくありません。");
 }
 
-$sql = "SELECT soccer_posts.*, users.name AS player_name
+$sql = "SELECT soccer_posts.*, users.name AS player_name, categories.category_name
         FROM soccer_posts
         LEFT JOIN users ON soccer_posts.user_id = users.id
+        LEFT JOIN categories ON soccer_posts.category_id = categories.id
         WHERE soccer_posts.id = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(":id", $id, PDO::PARAM_INT);
@@ -71,6 +72,8 @@ $commentStmt->bindValue(":post_id", $id, PDO::PARAM_INT);
 $commentStmt->execute();
 
 $comments = $commentStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$phaseClass = $post["phase"] === "攻撃" ? "phase-attack" : ($post["phase"] === "守備" ? "phase-defense" : "phase-transition");
 ?>
 
 
@@ -83,100 +86,104 @@ $comments = $commentStmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
-<main class="post-detail">
+<main class="container post-detail">
     <h1>投稿詳細</h1>
 
-    <h2><?= escape($post["match_name"]) ?></h2>
-    
-    <?php if (!empty($post["image_name"])): ?>
-　      <div class="post-image">
-            <img
-            src="uploads/<?= escape(basename($post["image_name"])) ?>"
-            alt="投稿されたプレー画像"
-            >
+    <p class="current-user">
+        ログイン中：<?= escape($currentUser["name"]) ?>
+        ｜<a href="logout.php">ログアウト</a>
+    </p>
+
+    <section class="post-card detail-card">
+        <div class="detail-card-header">
+            <h2 class="detail-match-name"><?= escape($post["match_name"]) ?></h2>
+            <div class="detail-tags">
+                <span class="tag <?= $phaseClass ?>"><?= escape($post["phase"]) ?></span>
+                <span class="tag tag-neutral"><?= escape($post["category_name"] ?? "未設定") ?></span>
+            </div>
         </div>
-　　<?php endif; ?>
 
-    <p>
-        発生した課題：<br>
-        <?= displayText($post["issue"]) ?>
-    </p>
+        <?php if (!empty($post["image_name"])): ?>
+            <div class="post-image">
+                <img
+                src="uploads/<?= escape(basename($post["image_name"])) ?>"
+                alt="投稿されたプレー画像"
+                >
+            </div>
+        <?php endif; ?>
 
-    <p>
-        原因：<br>
-        <?= displayText($post["cause"]) ?>
-    </p>
+        <div class="detail-field">
+            <h3>発生した課題</h3>
+            <p><?= displayText($post["issue"]) ?></p>
+        </div>
 
-    <p>
-        改善案：<br>
-        <?= displayText($post["improvement"]) ?>
-    </p>
+        <div class="detail-field">
+            <h3>原因</h3>
+            <p><?= $post["cause"] !== "" ? displayText($post["cause"]) : "(未記入)" ?></p>
+        </div>
 
-    <p>
-        <a href="action_plan.php?post_id=<?= (int)$post["id"] ?>">行動計画・練習メニューを見る</a>
-    </p>
+        <div class="detail-field">
+            <h3>改善案</h3>
+            <p><?= $post["improvement"] !== "" ? displayText($post["improvement"]) : "(未記入)" ?></p>
+        </div>
 
-　　<section class="comment-section">
-        <h2>ポジション別の意見</h2>
+        <p class="detail-meta">投稿者：<?= escape($post["player_name"]) ?> ｜ 投稿日時：<?= escape($post["created_at"]) ?></p>
+    </section>
+
+    <section class="post-card comment-form-card">
+        <h2>ポジション別の意見を投稿する</h2>
 
         <?php if ($error !== ""): ?>
             <p class="error-message"><?= escape($error) ?></p>
         <?php endif; ?>
 
         <?php if (isset($_GET["commented"]) && $_GET["commented"] === "1"): ?>
-            <p class="success-message">
-                意見を投稿しました。
-            </p>
+            <p class="success-message">意見を投稿しました。</p>
         <?php endif; ?>
 
-        <p class="current-user">
-            コメント者：<?= escape($currentUser["name"]) ?>(<?= escape($currentUser["position"]) ?>)
-            ｜<a href="logout.php">ログアウト</a>
-        </p>
-
-        <form action="detail.php?id=<?= (int)$post["id"] ?>" method="post">
+        <form action="detail.php?id=<?= (int)$post["id"] ?>" method="post" class="post-form">
             <input type="hidden" name="post_id" value="<?= (int)$post["id"] ?>">
 
-            <div>
-                <label for="comment">意見</label>
-                <textarea id="comment" name="comment" maxlength="500" required></textarea>
+            <div class="form-group">
+                <label for="comment">意見(<?= escape($currentUser["name"]) ?> / <?= escape($currentUser["position"]) ?>として投稿されます)</label>
+                <textarea id="comment" name="comment" rows="4" maxlength="500" required></textarea>
             </div>
 
-            <button type="submit">意見を投稿する</button>
+            <button type="submit" class="button-primary">意見を投稿する</button>
         </form>
-　　</section>
-　　
-　　<section class="comment-list">
-    <h2>投稿された意見</h2>
+    </section>
 
-    <?php if (empty($comments)): ?>
-        <p>まだ意見はありません。</p>
-    <?php else: ?>
-        <?php foreach ($comments as $commentData): ?>
-            <article class="comment-card">
-                <p class="comment-info">
-                    <span class="position-label">
-                        <?= escape($commentData["position"]) ?>
-                    </span>
+    <section class="post-card comment-list-card">
+        <h2>投稿された意見</h2>
 
-                    <strong>
-                        <?= escape($commentData["commenter_name"]) ?>
-                    </strong>
+        <?php if (empty($comments)): ?>
+            <p>まだ意見はありません。</p>
+        <?php else: ?>
+            <?php foreach ($comments as $commentData): ?>
+                <article class="comment-card">
+                    <p class="comment-info">
+                        <span class="position-label">
+                            <?= escape($commentData["position"]) ?>
+                        </span>
 
-                    <time>
-                        <?= escape($commentData["created_at"]) ?>
-                    </time>
-                </p>
+                        <strong>
+                            <?= escape($commentData["commenter_name"]) ?>
+                        </strong>
 
-                <p class="comment-text">
-                    <?= displayText($commentData["comment"]) ?>
-                </p>
-            </article>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</section>
+                        <time>
+                            <?= escape($commentData["created_at"]) ?>
+                        </time>
+                    </p>
 
-    <a href="list.php">投稿一覧へ戻る</a>
+                    <p class="comment-text">
+                        <?= displayText($commentData["comment"]) ?>
+                    </p>
+                </article>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </section>
+
+    <a href="list.php" class="button-secondary-link">投稿一覧へ戻る</a>
 </main>
 
 </body>

@@ -1,6 +1,6 @@
 <?php
 
-require_once "auth.php";
+require_once "includes/auth.php";
 
 $_SESSION = [];
 session_destroy();

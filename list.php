@@ -1,8 +1,8 @@
 <?php
 //DBに接続
-require_once("db.php");
-require_once "functions.php";
-require_once "auth.php";
+require_once("includes/db.php");
+require_once "includes/functions.php";
+require_once "includes/auth.php";
 
 $currentUser = requireLogin($pdo);
 
@@ -45,6 +45,20 @@ $sql .= " ORDER BY soccer_posts.id DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function phaseClass(string $phase): string
+{
+    if ($phase === "攻撃") return "text-attack";
+    if ($phase === "守備") return "text-defense";
+    return "text-transition";
+}
+
+function statusClass(string $status): string
+{
+    if ($status === "未実施") return "text-status-todo";
+    if ($status === "実践中") return "text-status-doing";
+    return "text-status-done";
+}
 ?>
 
 <!DOCTYPE html>
@@ -55,6 +69,14 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>投稿一覧</title>
 </head>
 <body>
+    <div class="container">
+    <h1>投稿一覧</h1>
+
+    <p class="current-user">
+        ログイン中：<?php echo htmlspecialchars($currentUser["name"], ENT_QUOTES, "UTF-8"); ?>
+        ｜<a href="logout.php">ログアウト</a>
+    </p>
+
     <form method="get" action="list.php" class="search-form">
         <div class="form-group">
             <label for="category_id">カテゴリー</label>
@@ -62,12 +84,8 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <option value="">すべて</option>
 
                 <?php foreach ($categories as $category): ?>
-                    <option value="<?php echo $category["id"]; ?>">
-                        <?php
-                        if ((string)$selectedCategory === (string)$category["id"]) {
-                            echo "selected";
-                        }
-                        ?>
+                    <option value="<?php echo $category["id"]; ?>"
+                        <?php if ((string)$selectedCategory === (string)$category["id"]) echo "selected"; ?>
                     >
                         <?php echo htmlspecialchars($category["category_name"], ENT_QUOTES, "UTF-8"); ?>
                     </option>
@@ -79,69 +97,32 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <label for="status">改善状況</label>
             <select name="status" id="status">
                 <option value="">すべて</option>
-                <option value="未実施"
-                    <?php if ($selectedStatus === "未実施") echo "selected"; ?>>
-                    未実施
-                </option>
-                
-                <option value="実践中"
-                    <?php if ($selectedStatus === "実践中") echo "selected"; ?>>
-                    実践中
-                </option>
-                
-                <option value="達成済み"
-                    <?php if ($selectedStatus === "達成済み") echo "selected"; ?>>
-                    達成済み
-                </option>
+                <option value="未実施" <?php if ($selectedStatus === "未実施") echo "selected"; ?>>未実施</option>
+                <option value="実践中" <?php if ($selectedStatus === "実践中") echo "selected"; ?>>実践中</option>
+                <option value="達成済み" <?php if ($selectedStatus === "達成済み") echo "selected"; ?>>達成済み</option>
             </select>
         </div>
 
         <button type="submit">絞り込む</button>
         <a href="list.php">条件を解除</a>
     </form>
-    
-    <p>
-    検索結果：<?php echo count($posts); ?>件
-　　</p>
-    
-    <?php if (empty($posts)): ?>
 
-        <p>条件に一致する投稿はありません。</p>
-
-　　<?php else: ?>
-
-        <?php foreach ($posts as $post): ?>
-
-        <?php endforeach; ?>
-
-    <?php endif; ?>
-    
-    <div class="container">
-    <h1>投稿一覧</h1>
-
-    <p class="current-user">
-        ログイン中：<?php echo htmlspecialchars($currentUser["name"], ENT_QUOTES, "UTF-8"); ?>
-        ｜<a href="logout.php">ログアウト</a>
-    </p>
+    <p class="search-result-count">検索結果：<?php echo count($posts); ?>件</p>
 
     <?php if (isset($_GET["updated"]) && $_GET["updated"] === "1"): ?>
-        <p class="success-message">
-            投稿を更新しました。
-        </p>
+        <p class="success-message">投稿を更新しました。</p>
     <?php endif; ?>
 
     <?php if (isset($_GET["deleted"]) && $_GET["deleted"] === "1"): ?>
-        <p class="success-message">
-            投稿を削除しました。
-        </p>
-　　<?php endif; ?>
+        <p class="success-message">投稿を削除しました。</p>
+    <?php endif; ?>
 
     <?php if (empty($posts)): ?>
         <p>まだ投稿はありません。</p>
     <?php else: ?>
         <?php foreach ($posts as $post): ?>
             <div class="post-card">
-                <h2>
+                <h2 class="post-match-name">
                     <?php echo htmlspecialchars($post["match_name"], ENT_QUOTES, "UTF-8"); ?>
                 </h2>
 
@@ -152,45 +133,49 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <p>
                     局面：
-                    <?php echo htmlspecialchars($post["phase"], ENT_QUOTES, "UTF-8"); ?>
+                    <strong class="<?= phaseClass($post["phase"]) ?>">
+                        <?php echo htmlspecialchars($post["phase"], ENT_QUOTES, "UTF-8"); ?>
+                    </strong>
                 </p>
 
                 <p>
-                    <strong>課題カテゴリー：</strong>
-                    <?php echo htmlspecialchars($post["category_name"] ?? "未設定", ENT_QUOTES, "UTF-8");?>
+                    課題カテゴリー：
+                    <strong><?php echo htmlspecialchars($post["category_name"] ?? "未設定", ENT_QUOTES, "UTF-8");?></strong>
                 </p>
 
                 <p>
                     発生した課題：
                     <?php echo displayText($post["issue"]); ?>
                 </p>
- 
+
                 <p>
                     原因：
-                    <?php echo displayText($post["cause"]); ?>
+                    <?php echo $post["cause"] !== "" ? displayText($post["cause"]) : "(未記入)"; ?>
                 </p>
-  
+
                 <p>
                     改善案：
-                    <?php echo displayText($post["improvement"]); ?>
+                    <?php echo $post["improvement"] !== "" ? displayText($post["improvement"]) : "(未記入)"; ?>
                 </p>
-        
+
                 <p>
-                    <strong>改善状況：</strong>
-                    <?php echo htmlspecialchars($post["status"], ENT_QUOTES, "UTF-8");?>
+                    改善状況：
+                    <strong class="<?= statusClass($post["status"]) ?>">
+                        <?php echo htmlspecialchars($post["status"], ENT_QUOTES, "UTF-8");?>
+                    </strong>
                 </p>
-        
+
                 <p>
                     投稿者名：
                     <?php echo htmlspecialchars($post["player_name"], ENT_QUOTES, "UTF-8"); ?>
                 </p>
-        
+
                 <p>
                     投稿日時：
                     <?php echo htmlspecialchars($post["created_at"], ENT_QUOTES, "UTF-8"); ?>
                 </p>
             </div>
-                
+
             <div class="post-actions">
                 <a
                     href="detail.php?id=<?= (int)$post["id"] ?>"
@@ -225,16 +210,12 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
         <div class="list-actions">
-            <a href="post.php">新しい振り返りを投稿する</a>
-    
-            <a href="statistics.php" class="statistics-button">コメント集計を見る</a>
-
-　　        <a href="analysis.php" class="statistics-button">AIによる傾向分析を見る</a>
-
-　　        <a href="export_csv.php">投稿データをCSVでダウンロード</a>
-
-　　        <a href="api_settings.php">APIキーを発行する</a>
-　　    </div>
-　　</div>
+            <a href="post.php" class="list-actions-primary">新しい振り返りを投稿する</a>
+            <a href="goals.php">目標管理を見る</a>
+            <a href="statistics.php">ポジション別コメント集計を見る</a>
+            <a href="analysis.php">AIによる傾向分析を見る</a>
+            <a href="export_csv.php">投稿データをCSVでダウンロード</a>
+        </div>
+    </div>
 </body>
 </html>

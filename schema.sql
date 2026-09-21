@@ -1,5 +1,5 @@
--- InfinityFreeのphpMyAdminに貼り付けて実行する、デプロイ用の完成形スキーマ
--- (migration_users.sql / migration_ai_analysis.sql / migration_api.sql を統合したもの)
+-- ReflectLink データベーススキーマ(完成形)
+-- 新規に環境を作る場合は、このファイルを丸ごと実行すればよい。
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,7 +24,7 @@ CREATE TABLE soccer_posts (
     category_id INT NOT NULL,
     issue TEXT NOT NULL,
     cause TEXT,
-    improvement TEXT NOT NULL,
+    improvement TEXT,
     status VARCHAR(20) NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -50,6 +50,18 @@ CREATE TABLE ai_analyses (
     generated_by INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (generated_by) REFERENCES users(id)
+);
+
+-- 個人の目標・行動・自己評価(goal-serviceというJavaサービスが管理)
+CREATE TABLE goals (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    goal TEXT NOT NULL,
+    action_text TEXT NOT NULL,
+    result TEXT,
+    status VARCHAR(20) NOT NULL DEFAULT '未着手',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO categories (category_name) VALUES

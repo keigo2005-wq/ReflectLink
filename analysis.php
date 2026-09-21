@@ -1,9 +1,9 @@
 <?php
 
-require_once "db.php";
-require_once "functions.php";
-require_once "auth.php";
-require_once "gemini.php";
+require_once "includes/db.php";
+require_once "includes/functions.php";
+require_once "includes/auth.php";
+require_once "includes/gemini.php";
 
 $currentUser = requireLogin($pdo);
 
@@ -97,8 +97,8 @@ $latest = $pdo->query($latestSql)->fetch(PDO::FETCH_ASSOC);
         <p class="success-message">分析結果を更新しました。</p>
     <?php endif; ?>
 
-    <form action="analysis.php" method="post">
-        <button type="submit">AIで最新の傾向を分析する</button>
+    <form action="analysis.php" method="post" class="analyze-form">
+        <button type="submit" class="button-primary button-large">AIで最新の傾向を分析する</button>
     </form>
 
     <?php if ($latest): ?>
@@ -115,7 +115,7 @@ $latest = $pdo->query($latestSql)->fetch(PDO::FETCH_ASSOC);
         <p>まだ分析結果がありません。上のボタンから実行してください。</p>
     <?php endif; ?>
 
-    <a href="list.php">投稿一覧へ戻る</a>
+    <a href="list.php" class="button-secondary-link">投稿一覧へ戻る</a>
 </main>
 </body>
 </html>

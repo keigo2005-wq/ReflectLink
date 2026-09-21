@@ -1,9 +1,10 @@
 <?php
 
-require_once "db.php";
-require_once "auth.php";
+require_once "includes/db.php";
+require_once "includes/functions.php";
+require_once "includes/auth.php";
 
-requireLogin($pdo);
+$currentUser = requireLogin($pdo);
 
 $sql = "
     SELECT users.position AS position, COUNT(*) AS comment_count
@@ -18,10 +19,32 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $positionLabels = [];
 $commentCounts = [];
+$totalComments = 0;
+$topPosition = null;
 
 foreach ($results as $result) {
     $positionLabels[] = $result["position"];
     $commentCounts[] = (int)$result["comment_count"];
+    $totalComments += (int)$result["comment_count"];
+    if ($topPosition === null) {
+        $topPosition = $result["position"];
+    }
+}
+
+$statusSql = "
+    SELECT status, COUNT(*) AS post_count
+    FROM soccer_posts
+    GROUP BY status
+";
+$statusStmt = $pdo->query($statusSql);
+$statusResults = $statusStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$statusOrder = ["未実施", "実践中", "達成済み"];
+$statusCounts = array_fill_keys($statusOrder, 0);
+foreach ($statusResults as $row) {
+    if (isset($statusCounts[$row["status"]])) {
+        $statusCounts[$row["status"]] = (int)$row["post_count"];
+    }
 }
 ?>
 
@@ -35,41 +58,55 @@ foreach ($results as $result) {
 </head>
 <body>
 
-<main>
-    <h1>ポジション別コメント件数</h1>
+<main class="container">
+    <h1>ポジション別コメント集計</h1>
+
+    <p class="current-user">
+        ログイン中：<?= escape($currentUser["name"]) ?>
+        ｜<a href="logout.php">ログアウト</a>
+    </p>
 
     <?php if (empty($results)): ?>
         <p>集計できるコメントがありません。</p>
     <?php else: ?>
-        <ul>
-            <?php foreach ($results as $result): ?>
-                <li>
-                    <?= htmlspecialchars(
-                        $result["position"],
-                        ENT_QUOTES,
-                        "UTF-8"
-                    ) ?>
-                    ：
-                    <?= (int)$result["comment_count"] ?>件
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-    
-    <div class="chart-container">
-        <canvas id="positionChart"></canvas>
-　　</div>
+        <div class="stat-tiles">
+            <div class="stat-tile">
+                <span class="stat-tile-value"><?= $totalComments ?></span>
+                <span class="stat-tile-label">総コメント数</span>
+            </div>
+            <div class="stat-tile">
+                <span class="stat-tile-value"><?= escape($topPosition) ?></span>
+                <span class="stat-tile-label">最も活発なポジション</span>
+            </div>
+        </div>
 
-    <a href="list.php">投稿一覧へ戻る</a>
+        <section class="post-card">
+            <h2>ポジション別コメント件数</h2>
+            <div class="chart-container">
+                <canvas id="positionChart"></canvas>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <section class="post-card">
+        <h2>改善状況の内訳</h2>
+        <div class="chart-container">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </section>
+
+    <a href="list.php" class="button-secondary-link">投稿一覧へ戻る</a>
 </main>
 
 <script>
     window.positionChartData = {
-        labels: <?= json_encode(
-            $positionLabels,
-            JSON_UNESCAPED_UNICODE
-        ) ?>,
+        labels: <?= json_encode($positionLabels, JSON_UNESCAPED_UNICODE) ?>,
         counts: <?= json_encode($commentCounts) ?>
+    };
+
+    window.statusChartData = {
+        labels: <?= json_encode(array_keys($statusCounts), JSON_UNESCAPED_UNICODE) ?>,
+        counts: <?= json_encode(array_values($statusCounts)) ?>
     };
 </script>
 

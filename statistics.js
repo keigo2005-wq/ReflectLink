@@ -12,9 +12,8 @@ if (chartCanvas && chartData) {
                 {
                     label: "コメント件数",
                     data: chartData.counts,
-                    backgroundColor: "#2864a8",
-                    borderColor: "#174574",
-                    borderWidth: 1
+                    backgroundColor: "#007aff",
+                    borderRadius: 6
                 }
             ]
         },
@@ -22,6 +21,9 @@ if (chartCanvas && chartData) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
 
             scales: {
                 y: {
@@ -30,6 +32,33 @@ if (chartCanvas && chartData) {
                         stepSize: 1
                     }
                 }
+            }
+        }
+    });
+}
+
+const statusCanvas = document.getElementById("statusChart");
+const statusData = window.statusChartData;
+
+if (statusCanvas && statusData) {
+    new Chart(statusCanvas, {
+        type: "doughnut",
+
+        data: {
+            labels: statusData.labels,
+            datasets: [
+                {
+                    data: statusData.counts,
+                    backgroundColor: ["#ff3b30", "#ff9500", "#34c759"]
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: "bottom" }
             }
         }
     });

@@ -1,6 +1,6 @@
 <?php
-require_once("db.php");
-require_once("auth.php");
+require_once("includes/db.php");
+require_once("includes/auth.php");
 
 $currentUser = requireLogin($pdo);
 
@@ -139,14 +139,15 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <title>改善状況の編集</title>
+    <title>投稿の編集</title>
 </head>
 <body>
 <div class="container">
 
-    <h1>改善状況の編集</h1>
+    <h1>投稿の編集</h1>
+    <p class="page-lead">内容の誤字修正や、改善状況の更新に使う画面です。</p>
 
-    <form action="edit.php" method="post">
+    <form action="edit.php" method="post" class="post-form">
         <input
             type="hidden"
             name="id"
@@ -260,10 +261,11 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             投稿者：<?php echo htmlspecialchars($post["player_name"], ENT_QUOTES, "UTF-8"); ?>
         </p>
 
-        <button type="submit">更新する</button>
+        <button type="submit" class="button-primary">更新する</button>
     </form>
 
-    <a href="list.php">投稿一覧へ戻る</a>
+    <a href="detail.php?id=<?php echo (int)$post["id"]; ?>" class="button-secondary-link">投稿詳細へ戻る</a>
+    <a href="list.php" class="button-secondary-link">投稿一覧へ戻る</a>
 
 </div>
 </body>

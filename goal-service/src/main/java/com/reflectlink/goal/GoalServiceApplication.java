@@ -1,11 +1,11 @@
-package com.reflectlink.actionplan;
+package com.reflectlink.goal;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ActionPlanServiceApplication {
+public class GoalServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ActionPlanServiceApplication.class, args);
+        SpringApplication.run(GoalServiceApplication.class, args);
     }
 }

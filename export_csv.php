@@ -1,7 +1,7 @@
 <?php
 
-require_once "db.php";
-require_once "auth.php";
+require_once "includes/db.php";
+require_once "includes/auth.php";
 
 requireLogin($pdo);
 
