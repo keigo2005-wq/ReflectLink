@@ -39,7 +39,6 @@ $currentUser = requireLogin($pdo);
         empty($phase) ||
         empty($category_id) ||
         empty($issue) ||
-        empty($improvement) ||
         empty($status)
         ) {
             $message = "必須項目をすべて入力してください。";
@@ -112,7 +111,7 @@ $currentUser = requireLogin($pdo);
 
     <form action="post.php" method="post" enctype="multipart/form-data" class="post-form">
         <div class="form-group">
-            <label for="match_name">試合名・対戦相手</label>
+            <label for="match_name">試合名・対戦相手<span class="required-mark">※必須</span></label>
             <input
                 type="text"
                 id="match_name"
@@ -121,7 +120,7 @@ $currentUser = requireLogin($pdo);
         </div>
 
         <div class="form-group">
-            <label for="match_date">試合日</label>
+            <label for="match_date">試合日<span class="required-mark">※必須</span></label>
             <input
                 type="date"
                 id="match_date"
@@ -130,7 +129,7 @@ $currentUser = requireLogin($pdo);
         </div>
 
         <div class="form-group">
-            <label for="phase">局面</label>
+            <label for="phase">局面<span class="required-mark">※必須</span></label>
             <select id="phase" name="phase">
                 <option value="">選択してください</option>
                 <option value="攻撃">攻撃</option>
@@ -140,7 +139,7 @@ $currentUser = requireLogin($pdo);
         </div>
 
         <div class="form-group">
-            <label for="category_id">課題カテゴリー</label>
+            <label for="category_id">課題カテゴリー<span class="required-mark">※必須</span></label>
             <select id="category_id" name="category_id" required>
                 <option value="">選択してください</option>
 
@@ -153,7 +152,7 @@ $currentUser = requireLogin($pdo);
         </div>
 
         <div class="form-group">
-            <label for="issue">発生した課題</label>
+            <label for="issue">発生した課題<span class="required-mark">※必須</span></label>
             <textarea id="issue" name="issue" rows="5" maxlength="500"></textarea>
             <p class="character-count">
                 <span id="issue-count">0</span> / 500文字
@@ -161,7 +160,7 @@ $currentUser = requireLogin($pdo);
         </div>
 
         <div class="form-group">
-            <label for="cause">原因</label>
+            <label for="cause">原因(任意・ミーティングで話し合ってから後で追記してもよい)</label>
             <textarea id="cause" name="cause" rows="5" maxlength="500"></textarea>
             <p class="character-count">
                 <span id="cause-count">0</span> / 500文字
@@ -169,7 +168,7 @@ $currentUser = requireLogin($pdo);
         </div>
 
         <div class="form-group">
-            <label for="improvement">改善案</label>
+            <label for="improvement">改善案(任意・ミーティングで話し合ってから後で追記してもよい)</label>
             <textarea id="improvement" name="improvement" rows="5" maxlength="500"></textarea>
             <p class="character-count">
                 <span id="improvement-count">0</span> / 500文字

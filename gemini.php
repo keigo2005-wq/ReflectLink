@@ -2,11 +2,13 @@
 
 function callGeminiApi(string $prompt): string
 {
-    if (!file_exists(__DIR__ . "/gemini.local.php")) {
+    if (file_exists(__DIR__ . "/gemini.local.php")) {
+        require __DIR__ . "/gemini.local.php";
+    } elseif (file_exists(__DIR__ . "/gemini.key.php")) {
+        require __DIR__ . "/gemini.key.php";
+    } else {
         throw new RuntimeException("gemini.local.php が見つかりません。gemini.local.php.example を参考に作成してください。");
     }
-
-    require __DIR__ . "/gemini.local.php";
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/"
         . $geminiModel . ":generateContent?key=" . urlencode($geminiApiKey);

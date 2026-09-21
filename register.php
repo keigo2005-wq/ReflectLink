@@ -70,17 +70,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <form action="register.php" method="post" class="post-form">
             <div class="form-group">
-                <label for="name">名前</label>
+                <label for="name">名前<span class="required-mark">※必須</span></label>
                 <input type="text" id="name" name="name" maxlength="100" required>
+                <p class="character-count">他の部員から見て分かるよう、本名を正しい表記（漢字）で入力してください。</p>
             </div>
 
             <div class="form-group">
-                <label for="email">メールアドレス</label>
+                <label for="email">メールアドレス<span class="required-mark">※必須</span></label>
                 <input type="email" id="email" name="email" maxlength="255" required>
             </div>
 
             <div class="form-group">
-                <label for="position">ポジション</label>
+                <label for="position">ポジション<span class="required-mark">※必須</span></label>
                 <select id="position" name="position" required>
                     <option value="">選択してください</option>
                     <?php foreach ($positions as $positionOption): ?>
@@ -92,12 +93,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
             <div class="form-group">
-                <label for="password">パスワード(8文字以上)</label>
+                <label for="password">パスワード(8文字以上)<span class="required-mark">※必須</span></label>
                 <input type="password" id="password" name="password" minlength="8" required>
             </div>
 
             <div class="form-group">
-                <label for="password_confirm">パスワード(確認)</label>
+                <label for="password_confirm">パスワード(確認)<span class="required-mark">※必須</span></label>
                 <input type="password" id="password_confirm" name="password_confirm" minlength="8" required>
             </div>
 

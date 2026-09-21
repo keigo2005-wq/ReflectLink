@@ -52,4 +52,9 @@ CREATE TABLE ai_analyses (
     FOREIGN KEY (generated_by) REFERENCES users(id)
 );
 
-INSERT INTO categories (category_name) VALUES ('守備'), ('攻撃'), ('攻守の切り替え');
+INSERT INTO categories (category_name) VALUES
+    ('コミュニケーション'),
+    ('技術'),
+    ('判断・認知'),
+    ('フィジカル'),
+    ('戦術');

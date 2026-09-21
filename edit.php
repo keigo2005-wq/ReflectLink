@@ -63,10 +63,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit("発生した課題を入力してください。");
     }
 
-    if ($improvement === "") {
-        exit("改善案を入力してください。");
-    }
-
     if (!in_array($status, $allowedStatuses, true)) {
         exit("改善状況が正しくありません。");
     }
@@ -158,7 +154,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         >
 
         <div class="form-group">
-            <label for="match_name">試合名・対戦相手</label>
+            <label for="match_name">試合名・対戦相手<span class="required-mark">※必須</span></label>
             
             <input type="text" id="match_name" name="match_name"
             value="<?php echo htmlspecialchars($post["match_name"], ENT_QUOTES, "UTF-8"); ?>"
@@ -167,7 +163,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="form-group">
-            <label for="match_date">試合日</label>
+            <label for="match_date">試合日<span class="required-mark">※必須</span></label>
             
             <input type="date" id="match_date" name="match_date"
             value="<?php echo htmlspecialchars($post["match_date"], ENT_QUOTES, "UTF-8"); ?>"
@@ -176,7 +172,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="form-group">
-            <label for="phase">局面</label>
+            <label for="phase">局面<span class="required-mark">※必須</span></label>
             
             <select id="phase" name="phase" required>
                 <option value="攻撃"
@@ -197,7 +193,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
 　　　　<div class="form-group">
-            <label for="category_id">課題カテゴリー</label>
+            <label for="category_id">課題カテゴリー<span class="required-mark">※必須</span></label>
 
             <select id="category_id" name="category_id" required>
                 <option value="">選択してください</option>
@@ -216,7 +212,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="form-group">
-            <label for="issue">発生した課題</label>
+            <label for="issue">発生した課題<span class="required-mark">※必須</span></label>
             
             <textarea id="issue" name="issue" rows="5" required>
                 <?php echo htmlspecialchars($post["issue"], ENT_QUOTES, "UTF-8"); ?>
@@ -224,17 +220,17 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="form-group">
-            <label for="cause">原因</label>
-            
+            <label for="cause">原因(任意)</label>
+
             <textarea id="cause" name="cause" rows="5">
                 <?php echo htmlspecialchars($post["cause"], ENT_QUOTES, "UTF-8"); ?>
             </textarea>
         </div>
 
         <div class="form-group">
-            <label for="improvement">改善案</label>
+            <label for="improvement">改善案(任意)</label>
 
-            <textarea id="improvement" name="improvement" rows="5" required>
+            <textarea id="improvement" name="improvement" rows="5">
                 <?php echo htmlspecialchars($post["improvement"], ENT_QUOTES, "UTF-8");?>
             </textarea>
         </div>

@@ -1,5 +1,7 @@
 .claude/
 db.local.php
 gemini.local.php
+gemini.key.php
 uploads/*
 !uploads/.gitkeep
+action-plan-service/target/

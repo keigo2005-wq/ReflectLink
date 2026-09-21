@@ -112,6 +112,10 @@ $comments = $commentStmt->fetchAll(PDO::FETCH_ASSOC);
         <?= displayText($post["improvement"]) ?>
     </p>
 
+    <p>
+        <a href="action_plan.php?post_id=<?= (int)$post["id"] ?>">行動計画・練習メニューを見る</a>
+    </p>
+
 　　<section class="comment-section">
         <h2>ポジション別の意見</h2>
 
