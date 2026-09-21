@@ -1,8 +1,12 @@
 package com.reflectlink.goal;
 
+import java.time.LocalDate;
+
 public class GoalRequest {
 
     private Integer userId;
+    private LocalDate periodStart;
+    private LocalDate periodEnd;
     private String goal;
     private String action;
     private String result;
@@ -14,6 +18,22 @@ public class GoalRequest {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public LocalDate getPeriodStart() {
+        return periodStart;
+    }
+
+    public void setPeriodStart(LocalDate periodStart) {
+        this.periodStart = periodStart;
+    }
+
+    public LocalDate getPeriodEnd() {
+        return periodEnd;
+    }
+
+    public void setPeriodEnd(LocalDate periodEnd) {
+        this.periodEnd = periodEnd;
     }
 
     public String getGoal() {

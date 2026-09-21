@@ -56,6 +56,8 @@ CREATE TABLE ai_analyses (
 CREATE TABLE goals (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
     goal TEXT NOT NULL,
     action_text TEXT NOT NULL,
     result TEXT,

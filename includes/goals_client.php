@@ -43,18 +43,22 @@ function listGoals(int $userId): array
     return goalApiRequest("GET", "/api/goals?userId=" . $userId);
 }
 
-function createGoal(int $userId, string $goal, string $action): array
+function createGoal(int $userId, string $periodStart, string $periodEnd, string $goal, string $action): array
 {
     return goalApiRequest("POST", "/api/goals", [
         "userId" => $userId,
+        "periodStart" => $periodStart,
+        "periodEnd" => $periodEnd,
         "goal" => $goal,
         "action" => $action,
     ]);
 }
 
-function updateGoal(int $id, string $goal, string $action, string $result, string $status): array
+function updateGoal(int $id, string $periodStart, string $periodEnd, string $goal, string $action, string $result, string $status): array
 {
     return goalApiRequest("PUT", "/api/goals/" . $id, [
+        "periodStart" => $periodStart,
+        "periodEnd" => $periodEnd,
         "goal" => $goal,
         "action" => $action,
         "result" => $result,

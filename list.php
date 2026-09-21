@@ -210,11 +210,11 @@ function statusClass(string $status): string
     <?php endif; ?>
 
         <div class="list-actions">
-            <a href="post.php" class="list-actions-primary">新しい振り返りを投稿する</a>
-            <a href="goals.php">目標管理を見る</a>
-            <a href="statistics.php">ポジション別コメント集計を見る</a>
-            <a href="analysis.php">AIによる傾向分析を見る</a>
-            <a href="export_csv.php">投稿データをCSVでダウンロード</a>
+            <a href="post.php" class="list-actions-primary">新規投稿</a>
+            <a href="goals.php">目標管理</a>
+            <a href="analysis.php">傾向分析</a>
+            <a href="statistics.php">統計</a>
+            <a href="export_csv.php">データダウンロード</a>
         </div>
     </div>
 </body>

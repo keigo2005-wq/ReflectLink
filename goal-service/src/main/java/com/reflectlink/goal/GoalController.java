@@ -22,13 +22,19 @@ public class GoalController {
 
     @GetMapping
     public List<Goal> listByUser(@RequestParam Integer userId) {
-        return repository.findByUserIdOrderByCreatedAtDesc(userId);
+        return repository.findByUserIdOrderByPeriodStartDesc(userId);
     }
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody GoalRequest request) {
         if (request.getUserId() == null) {
             return badRequest("userId は必須です。");
+        }
+        if (request.getPeriodStart() == null || request.getPeriodEnd() == null) {
+            return badRequest("期間(開始日・終了日)は必須です。");
+        }
+        if (request.getPeriodEnd().isBefore(request.getPeriodStart())) {
+            return badRequest("終了日は開始日より後の日付にしてください。");
         }
         if (isBlank(request.getGoal())) {
             return badRequest("目標は必須です。");
@@ -39,6 +45,8 @@ public class GoalController {
 
         Goal goal = new Goal();
         goal.setUserId(request.getUserId());
+        goal.setPeriodStart(request.getPeriodStart());
+        goal.setPeriodEnd(request.getPeriodEnd());
         goal.setGoal(request.getGoal());
         goal.setAction(request.getAction());
 
@@ -54,6 +62,12 @@ public class GoalController {
 
         return repository.findById(id)
                 .<ResponseEntity<Object>>map(existing -> {
+                    if (request.getPeriodStart() != null) {
+                        existing.setPeriodStart(request.getPeriodStart());
+                    }
+                    if (request.getPeriodEnd() != null) {
+                        existing.setPeriodEnd(request.getPeriodEnd());
+                    }
                     if (!isBlank(request.getGoal())) {
                         existing.setGoal(request.getGoal());
                     }

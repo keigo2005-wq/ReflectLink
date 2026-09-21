@@ -1,6 +1,7 @@
 package com.reflectlink.goal;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,6 +14,12 @@ public class Goal {
 
     @Column(name = "user_id", nullable = false)
     private Integer userId;
+
+    @Column(name = "period_start", nullable = false)
+    private LocalDate periodStart;
+
+    @Column(name = "period_end", nullable = false)
+    private LocalDate periodEnd;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String goal;
@@ -42,6 +49,22 @@ public class Goal {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public LocalDate getPeriodStart() {
+        return periodStart;
+    }
+
+    public void setPeriodStart(LocalDate periodStart) {
+        this.periodStart = periodStart;
+    }
+
+    public LocalDate getPeriodEnd() {
+        return periodEnd;
+    }
+
+    public void setPeriodEnd(LocalDate periodEnd) {
+        this.periodEnd = periodEnd;
     }
 
     public String getGoal() {

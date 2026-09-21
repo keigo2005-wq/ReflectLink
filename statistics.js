@@ -1,3 +1,7 @@
+if (window.ChartDataLabels) {
+    Chart.register(ChartDataLabels);
+}
+
 const chartCanvas = document.getElementById("positionChart");
 const chartData = window.positionChartData;
 
@@ -22,7 +26,14 @@ if (chartCanvas && chartData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                datalabels: {
+                    color: "#ffffff",
+                    font: { weight: "bold" },
+                    anchor: "end",
+                    align: "start",
+                    formatter: (value) => value
+                }
             },
 
             scales: {
@@ -58,7 +69,12 @@ if (statusCanvas && statusData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "bottom" }
+                legend: { position: "bottom" },
+                datalabels: {
+                    color: "#ffffff",
+                    font: { weight: "bold", size: 16 },
+                    formatter: (value) => (value > 0 ? value : "")
+                }
             }
         }
     });

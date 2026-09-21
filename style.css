@@ -301,9 +301,15 @@ a:hover {
 
 .list-actions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin: 24px 0;
+}
+
+@media (max-width: 480px) {
+    .list-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .list-actions a {
@@ -608,22 +614,92 @@ code {
 
 .goal-status-select {
     width: auto;
-    font-weight: 600;
+    font-weight: 700;
     padding: 10px 14px;
+    border-width: 2px;
 }
 
 .goal-status-select.goal-status-todo {
     color: var(--color-red);
+    background-color: var(--color-red-tint);
+    border-color: var(--color-red);
 }
 
 .goal-status-select.goal-status-doing {
     color: #ff9500;
+    background-color: rgba(255, 149, 0, 0.12);
+    border-color: #ff9500;
 }
 
 .goal-status-select.goal-status-done {
     color: var(--color-green);
+    background-color: var(--color-green-tint);
+    border-color: var(--color-green);
 }
 
 .goal-delete-form {
     margin-top: 10px;
+}
+
+.goal-period-group .goal-period-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.goal-period-inputs input {
+    width: auto;
+    flex: 1;
+}
+
+/* AI分析結果のMarkdown表示 */
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5 {
+    margin: 20px 0 8px;
+    font-weight: 700;
+}
+
+.markdown-body h3:first-child,
+.markdown-body h4:first-child {
+    margin-top: 0;
+}
+
+.markdown-body h3 {
+    font-size: 18px;
+}
+
+.markdown-body h4 {
+    font-size: 16px;
+    color: var(--color-blue);
+}
+
+.markdown-body h5 {
+    font-size: 14px;
+}
+
+.markdown-body p {
+    margin: 0 0 10px;
+    line-height: 1.7;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin: 0 0 12px;
+    padding-left: 22px;
+    line-height: 1.7;
+}
+
+.markdown-body li {
+    margin-bottom: 4px;
+}
+
+.markdown-body hr {
+    border: none;
+    border-top: 1px solid var(--color-separator);
+    margin: 16px 0;
+}
+
+.markdown-body strong {
+    font-weight: 700;
 }

@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $comment = trim($_POST["comment"] ?? "");
 
     if ($postId <= 0 || $comment === "") {
-        $error = "意見を入力してください。";
+        $error = "コメントを入力してください。";
     } else {
         $sql = "
             INSERT INTO comments
@@ -131,33 +131,33 @@ $phaseClass = $post["phase"] === "攻撃" ? "phase-attack" : ($post["phase"] ===
     </section>
 
     <section class="post-card comment-form-card">
-        <h2>ポジション別の意見を投稿する</h2>
+        <h2>ポジション別のコメントを投稿する</h2>
 
         <?php if ($error !== ""): ?>
             <p class="error-message"><?= escape($error) ?></p>
         <?php endif; ?>
 
         <?php if (isset($_GET["commented"]) && $_GET["commented"] === "1"): ?>
-            <p class="success-message">意見を投稿しました。</p>
+            <p class="success-message">コメントを投稿しました。</p>
         <?php endif; ?>
 
         <form action="detail.php?id=<?= (int)$post["id"] ?>" method="post" class="post-form">
             <input type="hidden" name="post_id" value="<?= (int)$post["id"] ?>">
 
             <div class="form-group">
-                <label for="comment">意見(<?= escape($currentUser["name"]) ?> / <?= escape($currentUser["position"]) ?>として投稿されます)</label>
+                <label for="comment">コメント(<?= escape($currentUser["name"]) ?> / <?= escape($currentUser["position"]) ?>として投稿されます)</label>
                 <textarea id="comment" name="comment" rows="4" maxlength="500" required></textarea>
             </div>
 
-            <button type="submit" class="button-primary">意見を投稿する</button>
+            <button type="submit" class="button-primary">コメントを投稿する</button>
         </form>
     </section>
 
     <section class="post-card comment-list-card">
-        <h2>投稿された意見</h2>
+        <h2>投稿されたコメント</h2>
 
         <?php if (empty($comments)): ?>
-            <p>まだ意見はありません。</p>
+            <p>まだコメントはありません。</p>
         <?php else: ?>
             <?php foreach ($comments as $commentData): ?>
                 <article class="comment-card">

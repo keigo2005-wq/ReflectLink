@@ -53,13 +53,14 @@ foreach ($statusResults as $row) {
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>コメント集計</title>
+    <title>統計</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <main class="container">
-    <h1>ポジション別コメント集計</h1>
+    <h1>統計</h1>
+    <p class="page-lead">ポジション別のコメント状況と、投稿の改善状況をまとめて確認できます。</p>
 
     <p class="current-user">
         ログイン中：<?= escape($currentUser["name"]) ?>
@@ -111,6 +112,7 @@ foreach ($statusResults as $row) {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <script src="statistics.js"></script>
 
 </body>

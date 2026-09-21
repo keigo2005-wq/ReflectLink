@@ -37,10 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $prompt = "あなたはサッカーチームのデータ分析アシスタントです。\n"
             . "以下は部員が投稿した「試合・練習の振り返り」の一覧です(新しい順)。\n"
-            . "これらを分析し、次の3点を日本語で簡潔にまとめてください。\n"
+            . "これらを分析し、次の4点を日本語で簡潔にまとめてください。\n"
             . "1. 繰り返し発生している課題のパターン\n"
             . "2. 局面(攻撃・守備・攻守の切り替え)別の傾向\n"
-            . "3. 過去の知見を組み合わせて考えられる、新しい改善アイデア\n\n"
+            . "3. 過去の知見を組み合わせて考えられる、新しい改善アイデア\n"
+            . "4. 3のアイデアを踏まえた、次の練習で実際に取り入れられる具体的な練習メニュー(人数・時間・進め方が分かる形で1〜2個)\n\n"
             . "---\n"
             . implode("\n\n", $lines);
 
@@ -107,9 +108,9 @@ $latest = $pdo->query($latestSql)->fetch(PDO::FETCH_ASSOC);
                 分析日時：<?= escape($latest["created_at"]) ?>
                 (対象<?= (int)$latest["post_count"] ?>件 / 実行者：<?= escape($latest["generated_by_name"]) ?>)
             </p>
-            <p class="comment-text">
-                <?= displayText($latest["summary"]) ?>
-            </p>
+            <div class="markdown-body">
+                <?= renderMarkdown($latest["summary"]) ?>
+            </div>
         </section>
     <?php else: ?>
         <p>まだ分析結果がありません。上のボタンから実行してください。</p>
