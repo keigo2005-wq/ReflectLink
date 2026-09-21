@@ -365,6 +365,16 @@ a:hover {
     }
 }
 
+.page-footnote {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.page-footnote a {
+    font-size: 13px;
+    color: var(--color-label-secondary);
+}
+
 .search-form {
     display: flex;
     flex-wrap: wrap;

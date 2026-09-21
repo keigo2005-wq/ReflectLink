@@ -54,10 +54,10 @@ $apiKey = $stmt->fetchColumn();
     <?php endif; ?>
 
     <form action="api_settings.php" method="post" onsubmit="return confirm('新しいAPIキーを発行すると、古いキーは使えなくなります。よろしいですか？');">
-        <button type="submit"><?= $apiKey ? "APIキーを再発行する" : "APIキーを発行する" ?></button>
+        <button type="submit" class="button-primary"><?= $apiKey ? "APIキーを再発行する" : "APIキーを発行する" ?></button>
     </form>
 
-    <a href="list.php">投稿一覧へ戻る</a>
+    <a href="list.php" class="button-secondary-link">投稿一覧へ戻る</a>
 </main>
 </body>
 </html>

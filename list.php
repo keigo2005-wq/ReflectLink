@@ -218,6 +218,10 @@ function statusClass(string $status): string
             <a href="statistics.php">統計</a>
             <a href="export_csv.php">データダウンロード</a>
         </div>
+
+        <p class="page-footnote">
+            <a href="api_settings.php">外部連携用のAPIキーを発行する</a>
+        </p>
     </div>
 </body>
 </html>
