@@ -1,23 +1,27 @@
 <?php
 
 require_once "db.php";
+require_once "auth.php";
+
+requireLogin($pdo);
 
 $sql = "
     SELECT
-        id,
-        match_name,
-        match_date,
-        phase,
-        category_id,
-        issue,
-        cause,
-        improvement,
-        status,
-        player_name,
-        created_at,
-        image_name
+        soccer_posts.id,
+        soccer_posts.match_name,
+        soccer_posts.match_date,
+        soccer_posts.phase,
+        soccer_posts.category_id,
+        soccer_posts.issue,
+        soccer_posts.cause,
+        soccer_posts.improvement,
+        soccer_posts.status,
+        users.name AS player_name,
+        soccer_posts.created_at,
+        soccer_posts.image_name
     FROM soccer_posts
-    ORDER BY created_at DESC, id DESC
+    LEFT JOIN users ON soccer_posts.user_id = users.id
+    ORDER BY soccer_posts.created_at DESC, soccer_posts.id DESC
 ";
 
 $stmt = $pdo->query($sql);

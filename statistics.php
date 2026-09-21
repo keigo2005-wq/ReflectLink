@@ -1,11 +1,15 @@
 <?php
 
 require_once "db.php";
+require_once "auth.php";
+
+requireLogin($pdo);
 
 $sql = "
-    SELECT position, COUNT(*) AS comment_count
+    SELECT users.position AS position, COUNT(*) AS comment_count
     FROM comments
-    GROUP BY position
+    LEFT JOIN users ON comments.user_id = users.id
+    GROUP BY users.position
     ORDER BY comment_count DESC
 ";
 

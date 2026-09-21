@@ -1,0 +1,8 @@
+<?php
+
+// このファイルを gemini.local.php としてコピーし、値を書き換えて使う。
+// gemini.local.php はGit管理対象外(.gitignore)。
+// APIキーは https://aistudio.google.com/api-keys で無料発行できる。
+
+$geminiApiKey = "ここにAPIキーを貼る";
+$geminiModel = "gemini-flash-lite-latest";

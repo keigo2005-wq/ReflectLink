@@ -1,7 +1,26 @@
 <?php
 require_once("db.php");
+require_once("auth.php");
+
+$currentUser = requireLogin($pdo);
 
 $allowedStatuses = ["未実施", "実践中", "達成済み"];
+
+function assertOwnership(PDO $pdo, int $id, int $userId): void
+{
+    $stmt = $pdo->prepare("SELECT user_id FROM soccer_posts WHERE id = :id");
+    $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$post) {
+        exit("指定された投稿が見つかりません。");
+    }
+
+    if ((int)$post["user_id"] !== $userId) {
+        exit("この投稿を編集する権限がありません。");
+    }
+}
 
 // 更新ボタンが押された場合
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -14,12 +33,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $matchDate = $_POST["match_date"] ?? "";
     $phase = $_POST["phase"] ?? "";
     $categoryId = (int)($_POST["category_id"] ?? 0);
-    $playerName = trim($_POST["player_name"] ?? "");
 
     if ($id <= 0) {
         exit("投稿番号が正しくありません。");
     }
-    
+
+    assertOwnership($pdo, $id, (int)$currentUser["id"]);
+
     if ($matchName === "") {
         exit("試合名・対戦相手を入力してください。");
     }
@@ -51,10 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit("改善状況が正しくありません。");
     }
 
-    if ($playerName === "") {
-        exit("投稿者名を入力してください。");
-    }
-
     $sql = "UPDATE soccer_posts
             SET match_name = :match_name,
                 match_date = :match_date,
@@ -63,12 +79,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 issue = :issue,
                 cause = :cause,
                 improvement = :improvement,
-                status = :status,
-                player_name = :player_name
+                status = :status
             WHERE id = :id";
 
     $stmt = $pdo->prepare($sql);
-    
+
     $stmt->bindValue(":match_name", $matchName, PDO::PARAM_STR);
     $stmt->bindValue(":match_date", $matchDate, PDO::PARAM_STR);
     $stmt->bindValue(":phase", $phase, PDO::PARAM_STR);
@@ -77,7 +92,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bindValue(":cause", $cause, PDO::PARAM_STR);
     $stmt->bindValue(":improvement", $improvement, PDO::PARAM_STR);
     $stmt->bindValue(":status", $status, PDO::PARAM_STR);
-    $stmt->bindValue(":player_name", $playerName, PDO::PARAM_STR);
     $stmt->bindValue(":id", $id, PDO::PARAM_INT);
     
     $result = $stmt->execute();
@@ -100,7 +114,12 @@ if ($id <= 0) {
     exit("投稿番号が正しくありません。");
 }
 
-$sql = "SELECT * FROM soccer_posts WHERE id = :id";
+assertOwnership($pdo, $id, (int)$currentUser["id"]);
+
+$sql = "SELECT soccer_posts.*, users.name AS player_name
+        FROM soccer_posts
+        LEFT JOIN users ON soccer_posts.user_id = users.id
+        WHERE soccer_posts.id = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(":id", $id, PDO::PARAM_INT);
 $stmt->execute();
@@ -241,14 +260,9 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </select>
         </div>
 
-        <div class="form-group">
-            <label for="player_name">投稿者名</label>
-
-            <input type="text" id="player_name" name="player_name"
-                   value="<?php echo htmlspecialchars($post["player_name"], ENT_QUOTES, "UTF-8"); ?>"
-                   required
-            >
-        </div>
+        <p class="current-user">
+            投稿者：<?php echo htmlspecialchars($post["player_name"], ENT_QUOTES, "UTF-8"); ?>
+        </p>
 
         <button type="submit">更新する</button>
     </form>

@@ -1,3 +1,10 @@
+<?php
+require_once("db.php");
+require_once("functions.php");
+require_once("auth.php");
+
+$currentUser = requireLogin($pdo);
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -7,8 +14,7 @@
 </head>
 <body>
     <div class="container">
-  　<?php
-    require_once("db.php");
+    <?php
 
     $sql = "SELECT id, category_name FROM categories ORDER BY id";
     $stmt = $pdo->query($sql);
@@ -16,7 +22,7 @@
 
     $message = "";
     $imageName = null;
-    
+
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $matchName   = $_POST["match_name"];
         $matchDate   = $_POST["match_date"];
@@ -26,8 +32,7 @@
         $cause       = $_POST["cause"];
         $improvement = $_POST["improvement"];
         $status = $_POST["status"];
-        $playerName  = $_POST["player_name"];
-    
+
         if (
         empty($matchName) ||
         empty($matchDate) ||
@@ -35,8 +40,7 @@
         empty($category_id) ||
         empty($issue) ||
         empty($improvement) ||
-        empty($status) ||
-        empty($playerName)
+        empty($status)
         ) {
             $message = "必須項目をすべて入力してください。";
         } else {
@@ -66,9 +70,9 @@
             
             if (empty($message)) {
                 $sql = "INSERT INTO soccer_posts
-                    (match_name, match_date, phase, category_id, issue, cause, improvement, status, player_name, image_name)
-                    VALUES 
-                    (:match_name, :match_date, :phase, :category_id, :issue, :cause, :improvement, :status, :player_name, :image_name)";
+                    (match_name, match_date, phase, category_id, issue, cause, improvement, status, user_id, image_name)
+                    VALUES
+                    (:match_name, :match_date, :phase, :category_id, :issue, :cause, :improvement, :status, :user_id, :image_name)";
 
                 $stmt = $pdo->prepare($sql);
 
@@ -80,7 +84,7 @@
                 $stmt->bindParam(":cause", $cause, PDO::PARAM_STR);
                 $stmt->bindParam(":improvement", $improvement, PDO::PARAM_STR);
                 $stmt->bindValue(":status", $status, PDO::PARAM_STR);
-                $stmt->bindParam(":player_name", $playerName, PDO::PARAM_STR);
+                $stmt->bindValue(":user_id", $currentUser["id"], PDO::PARAM_INT);
                 $stmt->bindValue(":image_name", $imageName, PDO::PARAM_STR);
 
                 $stmt->execute();
@@ -100,6 +104,11 @@
 
 
     <h1>試合課題の投稿</h1>
+
+    <p class="current-user">
+        投稿者：<?= escape($currentUser["name"]) ?>(<?= escape($currentUser["position"]) ?>)
+        ｜<a href="logout.php">ログアウト</a>
+    </p>
 
     <form action="post.php" method="post" enctype="multipart/form-data" class="post-form">
         <div class="form-group">
@@ -174,15 +183,6 @@
    　　　　　　　　　　　 <option value="実践中">実践中</option>
                  <option value="達成済み">達成済み</option>
             </select>
-        </div>
-
-        <div class="form-group">
-            <label for="player_name">投稿者名</label>
-            <input
-                type="text"
-                id="player_name"
-                name="player_name"
-            >
         </div>
 
         <div class="form-group image-form-group">

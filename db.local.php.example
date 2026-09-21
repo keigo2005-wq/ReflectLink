@@ -1,0 +1,8 @@
+<?php
+
+// このファイルを db.local.php としてコピーし、値を書き換えて使う。
+// db.local.php はGit管理対象外(.gitignore)。
+
+$dsn = 'mysql:dbname=reflectlink;host=127.0.0.1;port=3306;charset=utf8mb4';
+$user = 'root';
+$password = '';

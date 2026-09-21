@@ -1,0 +1,5 @@
+.claude/
+db.local.php
+gemini.local.php
+uploads/*
+!uploads/.gitkeep

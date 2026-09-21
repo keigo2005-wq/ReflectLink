@@ -2,6 +2,9 @@
 //DBに接続
 require_once("db.php");
 require_once "functions.php";
+require_once "auth.php";
+
+$currentUser = requireLogin($pdo);
 
 $categorySql = "SELECT id, category_name FROM categories ORDER BY id";
 $categoryStmt = $pdo->query($categorySql);
@@ -12,10 +15,13 @@ $selectedStatus = $_GET["status"] ?? "";
 
 $sql = "SELECT
             soccer_posts.*,
-            categories.category_name
+            categories.category_name,
+            users.name AS player_name
         FROM soccer_posts
         LEFT JOIN categories
-            ON soccer_posts.category_id = categories.id";
+            ON soccer_posts.category_id = categories.id
+        LEFT JOIN users
+            ON soccer_posts.user_id = users.id";
 
 $conditions = [];
 $params = [];
@@ -112,7 +118,12 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     <div class="container">
     <h1>投稿一覧</h1>
-    
+
+    <p class="current-user">
+        ログイン中：<?php echo htmlspecialchars($currentUser["name"], ENT_QUOTES, "UTF-8"); ?>
+        ｜<a href="logout.php">ログアウト</a>
+    </p>
+
     <?php if (isset($_GET["updated"]) && $_GET["updated"] === "1"): ?>
         <p class="success-message">
             投稿を更新しました。
@@ -188,24 +199,26 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     詳細を見る
                 </a>
 
-                <a 
-                    href="edit.php?id=<?php echo (int)$post["id"]; ?>"
-                    class="action-button edit-button"
-                >
-                    編集する
-                </a>
+                <?php if ((int)$post["user_id"] === (int)$currentUser["id"]): ?>
+                    <a
+                        href="edit.php?id=<?php echo (int)$post["id"]; ?>"
+                        class="action-button edit-button"
+                    >
+                        編集する
+                    </a>
 
-                <form
-                    action="delete.php" method="post" class="delete-form"
-                    onsubmit="return confirm('この投稿を削除してもよいですか？');"
-                >
+                    <form
+                        action="delete.php" method="post" class="delete-form"
+                        onsubmit="return confirm('この投稿を削除してもよいですか？');"
+                    >
 
-                    <input type="hidden" name="id" value="<?php echo (int)$post["id"]; ?>">
+                        <input type="hidden" name="id" value="<?php echo (int)$post["id"]; ?>">
 
-                    <button type="submit" class="action-button delete-button">
-                        削除する
-                    </button>
-                </form>
+                        <button type="submit" class="action-button delete-button">
+                            削除する
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
             <hr>
         <?php endforeach; ?>
@@ -215,8 +228,12 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="post.php">新しい振り返りを投稿する</a>
     
             <a href="statistics.php" class="statistics-button">コメント集計を見る</a>
-　　
+
+　　        <a href="analysis.php" class="statistics-button">AIによる傾向分析を見る</a>
+
 　　        <a href="export_csv.php">投稿データをCSVでダウンロード</a>
+
+　　        <a href="api_settings.php">APIキーを発行する</a>
 　　    </div>
 　　</div>
 </body>

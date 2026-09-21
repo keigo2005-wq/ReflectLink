@@ -2,36 +2,29 @@
 
 require_once "db.php";
 require_once "functions.php";
+require_once "auth.php";
+
+$currentUser = requireLogin($pdo);
 
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $postId = (int)($_POST["post_id"] ?? 0);
-    $position = $_POST["position"] ?? "";
-    $commenterName = trim($_POST["commenter_name"] ?? "");
     $comment = trim($_POST["comment"] ?? "");
 
-    $positions = ["GK", "DF", "MF", "FW", "監督・スタッフ"];
-
-    if (
-        $postId <= 0 ||
-        !in_array($position, $positions, true) ||
-        $commenterName === "" ||
-        $comment === ""
-    ) {
-        $error = "すべての項目を正しく入力してください。";
+    if ($postId <= 0 || $comment === "") {
+        $error = "意見を入力してください。";
     } else {
         $sql = "
             INSERT INTO comments
-                (post_id, position, commenter_name, comment)
+                (post_id, user_id, comment)
             VALUES
-                (:post_id, :position, :commenter_name, :comment)
+                (:post_id, :user_id, :comment)
         ";
 
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(":post_id", $postId, PDO::PARAM_INT);
-        $stmt->bindValue(":position", $position);
-        $stmt->bindValue(":commenter_name", $commenterName);
+        $stmt->bindValue(":user_id", $currentUser["id"], PDO::PARAM_INT);
         $stmt->bindValue(":comment", $comment);
         $stmt->execute();
 
@@ -46,7 +39,10 @@ if ($id <= 0) {
     exit("投稿番号が正しくありません。");
 }
 
-$sql = "SELECT * FROM soccer_posts WHERE id = :id";
+$sql = "SELECT soccer_posts.*, users.name AS player_name
+        FROM soccer_posts
+        LEFT JOIN users ON soccer_posts.user_id = users.id
+        WHERE soccer_posts.id = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(":id", $id, PDO::PARAM_INT);
 $stmt->execute();
@@ -59,14 +55,15 @@ if (!$post) {
 
 $commentSql = "
     SELECT
-        id,
-        position,
-        commenter_name,
-        comment,
-        created_at
+        comments.id,
+        users.position,
+        users.name AS commenter_name,
+        comments.comment,
+        comments.created_at
     FROM comments
-    WHERE post_id = :post_id
-    ORDER BY created_at DESC, id DESC
+    LEFT JOIN users ON comments.user_id = users.id
+    WHERE comments.post_id = :post_id
+    ORDER BY comments.created_at DESC, comments.id DESC
 ";
 
 $commentStmt = $pdo->prepare($commentSql);
@@ -128,25 +125,13 @@ $comments = $commentStmt->fetchAll(PDO::FETCH_ASSOC);
             </p>
         <?php endif; ?>
 
+        <p class="current-user">
+            コメント者：<?= escape($currentUser["name"]) ?>(<?= escape($currentUser["position"]) ?>)
+            ｜<a href="logout.php">ログアウト</a>
+        </p>
+
         <form action="detail.php?id=<?= (int)$post["id"] ?>" method="post">
             <input type="hidden" name="post_id" value="<?= (int)$post["id"] ?>">
-
-            <div>
-                <label for="position">ポジション</label>
-                    <select id="position" name="position" required>
-                        <option value="">選択してください</option>
-                        <option value="GK">GK</option>
-                        <option value="DF">DF</option>
-                        <option value="MF">MF</option>
-                        <option value="FW">FW</option>
-                        <option value="監督・スタッフ">監督・スタッフ</option>
-                    </select>
-            </div>
-
-            <div>
-                <label for="commenter_name">名前</label>
-                <input type="text" id="commenter_name" name="commenter_name" maxlength="50" required>
-            </div>
 
             <div>
                 <label for="comment">意見</label>
