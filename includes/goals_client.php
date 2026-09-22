@@ -1,6 +1,12 @@
 <?php
 
-const GOAL_SERVICE_URL = "http://127.0.0.1:8080";
+// 本番環境では includes/goals_client.local.php を置いて
+// GOAL_SERVICE_URL を上書きする(このファイル自体はGitにコミットしない)。
+if (file_exists(__DIR__ . "/goals_client.local.php")) {
+    require_once __DIR__ . "/goals_client.local.php";
+} else {
+    define("GOAL_SERVICE_URL", "http://127.0.0.1:8080");
+}
 
 function goalApiRequest(string $method, string $path, ?array $body = null): array
 {
@@ -9,7 +15,9 @@ function goalApiRequest(string $method, string $path, ?array $body = null): arra
     $options = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => $method,
-        CURLOPT_TIMEOUT => 10,
+        // 本番(Render無料プラン)はアクセスが無いとスリープし、
+        // 次回アクセス時に起動(コールドスタート)まで時間がかかるため長めに設定
+        CURLOPT_TIMEOUT => 40,
         CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
     ];
 

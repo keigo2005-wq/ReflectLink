@@ -2,6 +2,7 @@
 includes/db.local.php
 includes/gemini.local.php
 includes/gemini.key.php
+includes/goals_client.local.php
 uploads/*
 !uploads/.gitkeep
 goal-service/target/

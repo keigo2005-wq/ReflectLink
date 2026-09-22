@@ -1,0 +1,7 @@
+<?php
+
+// このファイルを goals_client.local.php としてコピーし、値を書き換えて使う。
+// goals_client.local.php はGit管理対象外(.gitignore)。
+// 本番(InfinityFree)では、Renderにデプロイしたgoal-serviceの公開URLを指定する。
+
+define("GOAL_SERVICE_URL", "https://your-goal-service.onrender.com");
