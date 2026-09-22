@@ -10,14 +10,18 @@ if (file_exists(__DIR__ . "/goals_client.local.php")) {
 
 function goalApiRequest(string $method, string $path, ?array $body = null): array
 {
+    // PHP自体の実行時間上限が短いホストでも、下のcurlタイムアウトまで待てるようにする
+    @set_time_limit(100);
+
     $ch = curl_init(GOAL_SERVICE_URL . $path);
 
     $options = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => $method,
         // 本番(Render無料プラン)はアクセスが無いとスリープし、
-        // 次回アクセス時に起動(コールドスタート)まで時間がかかるため長めに設定
-        CURLOPT_TIMEOUT => 40,
+        // 次回アクセス時に起動(コールドスタート、Spring Bootの起動を含めると
+        // 1分以上かかることがある)まで時間がかかるため長めに設定
+        CURLOPT_TIMEOUT => 90,
         CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
     ];
 
